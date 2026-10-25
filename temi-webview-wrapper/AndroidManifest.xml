@@ -1,0 +1,35 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.memory.temiweb" android:versionCode="21" android:versionName="2.1">
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+
+  <queries>
+    <package android:name="com.roboteam.teamy.usa" />
+    <package android:name="com.roboteam.teamy.china" />
+  </queries>
+
+  <application
+    android:allowBackup="false"
+    android:hardwareAccelerated="true"
+    android:label="Memory Companion"
+    android:usesCleartextTraffic="true"
+    android:theme="@android:style/Theme.Material.Light.NoActionBar">
+    <activity
+      android:name=".MainActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:exported="true"
+      android:screenOrientation="landscape">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <provider
+      android:name="com.robotemi.sdk.TemiSdkContentProvider"
+      android:authorities="com.memory.temiweb.com.robotemi.sdk"
+      android:enabled="true"
+      android:exported="false" />
+  </application>
+</manifest>

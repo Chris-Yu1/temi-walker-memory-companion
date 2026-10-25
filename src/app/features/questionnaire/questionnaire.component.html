@@ -1,0 +1,145 @@
+<section class="questionnaire-shell">
+  <header class="questionnaire-header">
+    <p>Memory Companion Study</p>
+    <h1>Electronic Questionnaire</h1>
+    <span>Complete this form after the robot interaction. All scale items are required.</span>
+  </header>
+
+  <form class="questionnaire-form" (ngSubmit)="submit()">
+    <section class="questionnaire-card">
+      <h2>Participant</h2>
+      <div class="field-grid">
+        <label>
+          Participant name
+          <input type="text" [ngModel]="participantName()" (ngModelChange)="participantName.set($event)" name="participantName" />
+        </label>
+        <label>
+          Age
+          <input type="number" min="1" max="130" [ngModel]="age()" (ngModelChange)="setAge($event)" name="age" />
+        </label>
+        <label>
+          Gender
+          <select [ngModel]="gender()" (ngModelChange)="gender.set($event)" name="gender">
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="non_binary">Non-binary</option>
+            <option value="prefer_not_to_say">Prefer not to say</option>
+          </select>
+        </label>
+        <label>
+          Session type
+          <select [ngModel]="sessionOrder()" (ngModelChange)="sessionOrder.set($event)" name="sessionOrder">
+            <option value="single">Single robot session</option>
+            <option value="temi_first">Temi first, Walker second</option>
+            <option value="walker_first">Walker first, Temi second</option>
+          </select>
+        </label>
+        <label>
+          Date
+          <input type="date" [ngModel]="sessionDate()" (ngModelChange)="sessionDate.set($event)" name="sessionDate" />
+        </label>
+      </div>
+    </section>
+
+    <section class="questionnaire-card">
+      <h2>Consent Confirmation</h2>
+      <label class="check-row">
+        <input type="checkbox" [ngModel]="agreedToParticipate()" (ngModelChange)="agreedToParticipate.set($event)" name="consentParticipate" />
+        I agree to take part in this study.
+      </label>
+      <label class="check-row">
+        <input type="checkbox" [ngModel]="agreedToAudio()" (ngModelChange)="agreedToAudio.set($event)" name="consentAudio" />
+        I agree that my spoken answers may be audio recorded for research analysis.
+      </label>
+      <label class="check-row">
+        <input type="checkbox" [ngModel]="agreedToCameraMetrics()" (ngModelChange)="agreedToCameraMetrics.set($event)" name="consentCamera" />
+        I understand camera-based calibration may estimate head pose and eye gaze/attention measures.
+      </label>
+    </section>
+
+    <section class="questionnaire-card">
+      <h2>System Usability Scale</h2>
+      <p class="scale-hint">1 = strongly disagree, 5 = strongly agree</p>
+      <div class="scale-table five-point">
+        <div class="scale-head">Statement</div>
+        <div class="scale-number" *ngFor="let value of [1,2,3,4,5]">{{ value }}</div>
+        <ng-container *ngFor="let item of susItems">
+          <div class="scale-question">{{ item.text }}</div>
+          <label class="radio-cell" *ngFor="let value of [1,2,3,4,5]">
+            <input type="radio" [name]="item.id" [ngModel]="susResponses()[item.id]" (ngModelChange)="setResponse('sus', item.id, value)" [value]="value" />
+          </label>
+        </ng-container>
+      </div>
+    </section>
+
+    <section class="questionnaire-card">
+      <h2>NASA-TLX</h2>
+      <p class="scale-hint">1 = very low/perfect, 7 = very high/failure</p>
+      <div class="scale-table seven-point">
+        <div class="scale-head">Question</div>
+        <div class="scale-number" *ngFor="let value of [1,2,3,4,5,6,7]">{{ value }}</div>
+        <ng-container *ngFor="let item of tlxItems">
+          <div class="scale-question">{{ item.text }}</div>
+          <label class="radio-cell" *ngFor="let value of [1,2,3,4,5,6,7]">
+            <input type="radio" [name]="item.id" [ngModel]="tlxResponses()[item.id]" (ngModelChange)="setResponse('tlx', item.id, value)" [value]="value" />
+          </label>
+        </ng-container>
+      </div>
+    </section>
+
+    <section class="questionnaire-card">
+      <h2>SASSI</h2>
+      <p class="scale-hint">1 = strongly disagree, 5 = strongly agree</p>
+      <div class="sassi-group" *ngFor="let category of sassiCategories">
+        <h3>{{ category.label }}</h3>
+        <div class="scale-table five-point">
+          <div class="scale-head">Statement</div>
+          <div class="scale-number" *ngFor="let value of [1,2,3,4,5]">{{ value }}</div>
+          <ng-container *ngFor="let item of category.items">
+            <div class="scale-question">{{ item.text }}</div>
+            <label class="radio-cell" *ngFor="let value of [1,2,3,4,5]">
+              <input type="radio" [name]="item.id" [ngModel]="sassiResponses()[item.id]" (ngModelChange)="setResponse('sassi', item.id, value)" [value]="value" />
+            </label>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+
+    <section class="questionnaire-card">
+      <h2>Comparison Notes</h2>
+      <div class="field-grid">
+        <label>
+          Which robot interaction did you prefer?
+          <select [ngModel]="preferredRobot()" (ngModelChange)="preferredRobot.set($event)" name="preferredRobot">
+            <option value="">Not applicable / no preference</option>
+            <option value="temi">Temi</option>
+            <option value="walker">Walker</option>
+            <option value="both">Both</option>
+          </select>
+        </label>
+        <label class="full-width">
+          Why?
+          <textarea [ngModel]="preferenceReason()" (ngModelChange)="preferenceReason.set($event)" name="preferenceReason"></textarea>
+        </label>
+        <label class="full-width">
+          What specific aspects influenced your choice?
+          <textarea [ngModel]="influentialAspects()" (ngModelChange)="influentialAspects.set($event)" name="influentialAspects"></textarea>
+        </label>
+        <label class="full-width">
+          Was there anything you did not like?
+          <textarea [ngModel]="dislikedAspects()" (ngModelChange)="dislikedAspects.set($event)" name="dislikedAspects"></textarea>
+        </label>
+        <label class="full-width">
+          What would you recommend improving?
+          <textarea [ngModel]="improvementSuggestions()" (ngModelChange)="improvementSuggestions.set($event)" name="improvementSuggestions"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <footer class="submit-bar">
+      <p class="error" *ngIf="submitError()">{{ submitError() }}</p>
+      <p class="success" *ngIf="submitMessage()">{{ submitMessage() }} <span *ngIf="savedFolder()">Saved folder: {{ savedFolder() }}</span></p>
+      <button type="submit" [disabled]="isSubmitting()">{{ isSubmitting() ? 'Saving...' : 'Submit Questionnaire' }}</button>
+    </footer>
+  </form>
+</section>

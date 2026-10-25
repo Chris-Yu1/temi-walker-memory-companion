@@ -1,0 +1,219 @@
+<main class="questionnaire-page" *ngIf="step() === 'questionnaire'">
+  <app-questionnaire></app-questionnaire>
+</main>
+
+<main
+  class="intro-page"
+  *ngIf="step() === 'introduction'"
+  (pointerdown)="startRegistrationFromIntroSurface()"
+  (touchend)="startRegistrationFromIntroSurface()"
+>
+  <section class="intro-hero">
+    <div class="intro-copy">
+      <p class="eyebrow">Memory Companion</p>
+      <h1>Photo-Guided Memory Conversation</h1>
+      <p class="intro">
+        A calm voice-based reminiscence system that helps users revisit personal photos through
+        gentle questions, attentive listening, and structured session records.
+      </p>
+
+      <div class="intro-actions">
+            <button
+              type="button"
+              (click)="startRegistration()"
+              [disabled]="isIntroSpeaking()"
+            >
+              {{
+                isIntroSpeaking()
+                  ? 'Speaking...'
+                  : 'Start'
+              }}
+            </button>
+          <span>{{ isWalkerRobot() ? 'Tap Start to begin.' : 'Tap Start to begin.' }}</span>
+      </div>
+    </div>
+
+    <div class="intro-visual" aria-hidden="true">
+      <div class="robot-face" [class.is-speaking]="isRobotSpeaking()">
+        <div class="face-screen">
+          <span class="eye left-eye"></span>
+          <span class="eye right-eye"></span>
+          <span class="mouth"></span>
+        </div>
+      </div>
+      <div class="voice-line">
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div
+  class="corner-robot-face"
+  [class.is-speaking]="isRobotSpeaking()"
+  *ngIf="step() !== 'introduction'"
+  aria-hidden="true"
+>
+  <div class="face-screen">
+    <span class="eye left-eye"></span>
+    <span class="eye right-eye"></span>
+    <span class="mouth"></span>
+  </div>
+</div>
+
+<main class="registration-page" *ngIf="step() === 'registration'">
+  <section class="registration-form">
+    <p class="eyebrow">Memory Companion</p>
+    <h1>User Registration</h1>
+    <p class="intro">Enter the user profile to personalise the photo conversation.</p>
+
+    <div class="form-grid">
+      <label>
+        Name
+        <input
+          type="text"
+          [ngModel]="userName()"
+          (focus)="showKeyboard('name')"
+          (ngModelChange)="updateUserName($event)"
+          placeholder="Enter name"
+        />
+      </label>
+
+      <label>
+        Age
+        <input
+          type="text"
+          inputmode="numeric"
+          min="1"
+          max="130"
+          [ngModel]="age()"
+          (focus)="showKeyboard('age')"
+          (ngModelChange)="updateAge($event)"
+          placeholder="Enter age"
+        />
+      </label>
+
+      <label>
+        Gender
+        <select [ngModel]="gender()" (ngModelChange)="updateGender($event)">
+          <option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+
+    </div>
+
+    <p class="form-error" *ngIf="registrationError()">{{ registrationError() }}</p>
+
+    <div class="touch-keyboard" *ngIf="activeKeyboardField()">
+      <div class="key-row number-row">
+        <button type="button" *ngFor="let key of numberRow" (click)="pressKeyboardKey(key)">{{ key }}</button>
+      </div>
+      <ng-container *ngIf="activeKeyboardField() === 'name'">
+        <div class="key-row" *ngFor="let row of keyboardRows">
+          <button type="button" *ngFor="let key of row" (click)="pressKeyboardKey(key)">{{ key }}</button>
+        </div>
+        <div class="key-row command-row">
+          <button type="button" class="wide-key" (click)="pressKeyboardSpace()">Space</button>
+          <button type="button" (click)="pressKeyboardBackspace()">Backspace</button>
+          <button type="button" (click)="clearKeyboardField()">Clear</button>
+          <button type="button" class="wide-key" (click)="hideKeyboard()">Done</button>
+        </div>
+      </ng-container>
+      <div class="key-row command-row" *ngIf="activeKeyboardField() === 'age'">
+        <button type="button" (click)="pressKeyboardBackspace()">Backspace</button>
+        <button type="button" (click)="clearKeyboardField()">Clear</button>
+        <button type="button" class="wide-key" (click)="hideKeyboard()">Done</button>
+      </div>
+    </div>
+
+    <div class="continue-row">
+      <button type="button" class="secondary-button" (click)="returnToIntroduction()">Back</button>
+      <span>Speaker access will be enabled when you continue.</span>
+      <button type="button" (click)="continueToCalibration()">Continue</button>
+    </div>
+  </section>
+</main>
+
+<main class="flow-page" *ngIf="step() === 'calibration'">
+  <app-calibration (back)="backToRegistration()" (calibrated)="completeCalibration($event)"></app-calibration>
+  <p class="form-error centered" *ngIf="uploadError()">{{ uploadError() }}</p>
+</main>
+
+<main class="flow-page" *ngIf="step() === 'qr-upload'">
+  <section class="qr-panel">
+    <p class="eyebrow">Phone Upload</p>
+    <h1>Upload Two Photos</h1>
+    <p class="intro" *ngIf="isPublicUploadUrl(); else localUploadHint">
+      Scan the QR code with any phone network, then upload exactly two photos.
+    </p>
+    <ng-template #localUploadHint>
+      <p class="intro">Scan the QR code with a phone on the same Wi-Fi network, or configure a public upload URL.</p>
+    </ng-template>
+
+    <div class="qr-layout">
+      <img *ngIf="qrDataUrl(); else qrLoading" [src]="qrDataUrl()" alt="QR code for phone photo upload" />
+      <ng-template #qrLoading>
+        <div class="qr-placeholder">
+          {{ isCreatingUploadSession() ? 'Creating QR code...' : 'QR code is not ready.' }}
+        </div>
+      </ng-template>
+      <div>
+        <strong>Upload link</strong>
+        <span>{{ uploadUrl() || 'Preparing upload link...' }}</span>
+        <p>{{ uploadedPhotos().length }}/2 photos received</p>
+      </div>
+    </div>
+
+    <p class="form-error" *ngIf="uploadError()">{{ uploadError() }}</p>
+
+    <div class="continue-row">
+      <button type="button" class="secondary-button" (click)="backToRegistration()">Back</button>
+      <button type="button" (click)="createMobileUploadSession()" [disabled]="isCreatingUploadSession()">
+        {{ isCreatingUploadSession() ? 'Creating...' : 'Create New QR Code' }}
+      </button>
+    </div>
+  </section>
+</main>
+
+<main class="flow-page" *ngIf="step() === 'photo-selection'">
+  <section class="selection-panel">
+    <p class="eyebrow">Photo Selection</p>
+    <h1>Choose a Photo</h1>
+    <p class="intro">Select one photo to begin. After four topics are complete, you can return here and choose the other photo.</p>
+
+    <div class="photo-choice-grid">
+      <button
+        type="button"
+        class="photo-choice"
+        *ngFor="let photo of uploadedPhotos(); let index = index"
+        [class.selected]="selectedPhotoId() === photo.id"
+        [class.completed]="completedPhotoIds().includes(photo.id)"
+        [disabled]="completedPhotoIds().includes(photo.id)"
+        (click)="choosePhoto(photo.id)"
+      >
+        <img [src]="photo.dataUrl" [alt]="'Uploaded photo ' + (index + 1)" />
+        <span>{{ completedPhotoIds().includes(photo.id) ? 'Completed' : selectedPhotoId() === photo.id ? 'Starting...' : 'Select Photo' }}</span>
+      </button>
+    </div>
+
+    <div class="continue-row">
+      <button type="button" class="secondary-button" (click)="createMobileUploadSession()">Upload Again</button>
+      <button type="button" (click)="returnToIntroduction()">End Session</button>
+    </div>
+  </section>
+</main>
+
+<main class="photo-page" *ngIf="step() === 'conversation'">
+  <header class="app-header">
+    <button type="button" class="back-button" (click)="returnToIntroduction()">Exit</button>
+    <div>
+      <strong>Memory Companion</strong>
+      <small>{{ robotId() }}</small>
+    </div>
+    <span class="status" [class.connected]="connectionStatus() === 'connected'">
+      {{ connectionLabel() }}
+    </span>
+  </header>
+
+  <app-conversation></app-conversation>
+</main>

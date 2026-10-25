@@ -1,0 +1,28 @@
+<section class="upload-page">
+  <div class="upload-heading">
+    <p class="eyebrow">Photo Conversation</p>
+    <h1>{{ previewUrl() ? 'Review Your Photo' : 'Upload a Photo' }}</h1>
+    <p>{{ previewUrl() ? 'Start when the photo is ready.' : 'Choose one local image to begin a memory conversation.' }}</p>
+  </div>
+
+  <label class="file-picker" [class.compact]="previewUrl()">
+    <input type="file" accept="image/*" (change)="handleFileChange($event)" />
+    <strong>{{ previewUrl() ? 'Choose a Different Photo' : 'Choose an Image' }}</strong>
+    <small>Local file upload only. The camera is never used.</small>
+  </label>
+
+  <p class="error" [class.is-empty]="!error()">{{ error() || 'No error' }}</p>
+
+  <figure
+    class="preview"
+    *ngIf="previewUrl() as imageUrl"
+    [style.background-image]="'url(' + imageUrl + ')'"
+  >
+    <img [src]="imageUrl" alt="Uploaded image preview" />
+  </figure>
+
+  <div class="photo-actions" *ngIf="previewUrl()">
+    <span>{{ selectedInfo() }}</span>
+    <button type="button" (click)="startConversation()">Start Conversation</button>
+  </div>
+</section>

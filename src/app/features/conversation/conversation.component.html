@@ -1,0 +1,41 @@
+<section class="conversation-page">
+  <div class="conversation-heading">
+    <div>
+      <p class="eyebrow">Memory Conversation</p>
+      <h1>{{ status() === 'completed' ? 'Conversation Complete' : 'Talk About This Photo' }}</h1>
+    </div>
+    <span class="progress">Question {{ progressLabel() }} · {{ remainingTimeLabel() }}</span>
+  </div>
+
+  <figure
+    class="conversation-photo"
+    *ngIf="photo() as currentPhoto"
+    [style.background-image]="'url(' + currentPhoto.dataUrl + ')'"
+  >
+    <img [src]="currentPhoto.dataUrl" alt="Photo used for the memory conversation" />
+  </figure>
+
+  <div class="complete" *ngIf="status() === 'completed'; else activeConversation">
+    <h2>This photo conversation has ended.</h2>
+    <p>The four photo topics are complete.</p>
+    <button type="button" (click)="exitConversation()">Choose Another Photo</button>
+  </div>
+
+  <ng-template #activeConversation>
+    <section class="question-panel">
+      <div class="question-copy">
+        <span>Current question</span>
+        <p>{{ activeQuestion() }}</p>
+      </div>
+      <button type="button" class="replay-button" (click)="replayQuestion()">Replay Question</button>
+    </section>
+
+    <p class="error" [class.is-empty]="!error()">{{ error() || 'No error' }}</p>
+
+    <div class="button-row">
+      <button type="button" class="voice-button" (click)="toggleListening()">
+        {{ isListening() ? 'Listening' : 'Voice Answer' }}
+      </button>
+    </div>
+  </ng-template>
+</section>

@@ -1,0 +1,36 @@
+<section class="calibration-page">
+  <div class="calibration-heading">
+    <h1>Calibration</h1>
+    <p>Please place your face inside the frame. The system needs a short calibration before continuing.</p>
+  </div>
+
+  <figure class="camera-frame" [class.is-ready]="cameraReady()" [class.is-aligned]="faceAligned()">
+    <video #videoElement autoplay muted playsinline></video>
+    <img
+      #rosCameraImage
+      class="ros-camera-image"
+      *ngIf="walkerCameraFrame()"
+      [src]="walkerCameraFrame()"
+      alt="Walker live camera preview"
+    />
+    <canvas #snapshotCanvas aria-hidden="true"></canvas>
+    <div class="face-target">
+      <span></span>
+    </div>
+  </figure>
+
+  <p class="status-copy" [class.error-copy]="error()">{{ error() || message() }}</p>
+
+  <div class="calibration-actions">
+    <button type="button" class="secondary-button" (click)="back.emit()">Back</button>
+    <button
+      type="button"
+      (pointerup)="saveCalibration($event)"
+      (touchend)="saveCalibration($event)"
+      (click)="saveCalibration($event)"
+      [disabled]="!cameraReady() || sampleCount() < 50 || isLocking()"
+    >
+      {{ isLocking() ? 'Preparing...' : sampleCount() >= 50 ? 'Continue' : 'Measuring...' }}
+    </button>
+  </div>
+</section>

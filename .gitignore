@@ -1,0 +1,56 @@
+# Secrets and local configuration
+.env
+.env.local
+.env.*.local
+
+# Dependencies and build output
+node_modules/
+.pnpm-store/
+dist/
+build/
+.angular/
+.gradle/
+coverage/
+
+# Runtime and experimental data
+output/
+outputs/
+uploads/
+logs/
+*.log
+*.wav
+*.mp3
+*.b64
+participant*.csv
+session*.csv
+
+# Large local SDKs and tools
+android-sdk/
+android-tools/
+jdk/
+node-local/
+git-local/
+speech-local/
+speech-models/
+
+# LaTeX build artefacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+tmp/
+
+# Android signing/build artefacts
+*.apk
+*.idsig
+*.keystore
